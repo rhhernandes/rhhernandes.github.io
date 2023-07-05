@@ -2,6 +2,8 @@
 
 Static Github page for raphaelhernandes.com.
 
+main.py generates Portuguese and English pages from articles.csv.
+
 
 ## Credits:
 
