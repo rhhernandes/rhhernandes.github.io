@@ -4,6 +4,7 @@ Static Github page for raphaelhernandes.com.
 
 main.py generates Portuguese and English pages from articles.csv.
 
+So, run main.py and then commit/push changes to update the website.
 
 ## Credits:
 
