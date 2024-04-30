@@ -93,11 +93,11 @@ with open('about_pt.html', 'r', encoding='utf-8') as f:
 with open('about_en.html', 'r', encoding='utf-8') as f:
     about_en = f.read()
 
-language_selector_pt = 'Português / <a href="./en.html">English</a>'
-language_selector_en = '<a href="./index.html">Português</a> / English'
+language_selector_pt = 'Português / <a href="./index.html">English</a>'
+language_selector_en = '<a href="./pt.html">Português</a> / English'
 
 # Generate webpages in both languages
-with open('index.html', 'w', encoding='utf-8') as f:
+with open('pt.html', 'w', encoding='utf-8') as f:
     highlights = create_highlights(df_highlights, 'Portuguese')
     articles = create_articles(df_articles, 'Portuguese')
     f.write(template.format(lang='pt', 
@@ -111,7 +111,7 @@ with open('index.html', 'w', encoding='utf-8') as f:
                             articles=articles))
 
 # Generate webpages in both languages
-with open('en.html', 'w', encoding='utf-8') as f:
+with open('index.html', 'w', encoding='utf-8') as f:
     highlights = create_highlights(df_highlights, 'English')
     articles = create_articles(df_articles, 'English')
     f.write(template.format(lang='en', 
