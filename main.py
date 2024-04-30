@@ -82,11 +82,11 @@ with open('template.html', 'r', encoding='utf-8') as f:
     template = f.read()
 
 # Descriptions in both languages
-title_pt = 'Jornalista de tecnologia, dados e inteliência artificial'
-title_en = 'Tech, data and artificial intelligence journalist'
+title_pt = 'Pesquisador em Ética de Inteligência Artificial; Jornalista de tecnologia, dados e IA'
+title_en = 'Artificial Intelligence Ethics Researcher; Tech, data and AI journalist'
 
-description_pt = 'Jornalista de tecnologia e dados'
-description_en = 'Tech and data journalist'
+description_pt = 'Pesquisador em Ética de IA e Jornalista'
+description_en = 'AI Ethics Researcher, Journalist'
 
 with open('about_pt.html', 'r', encoding='utf-8') as f:
     about_pt = f.read()
