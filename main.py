@@ -83,7 +83,7 @@ with open('template.html', 'r', encoding='utf-8') as f:
 
 # Descriptions in both languages
 title_pt = 'Pesquisador em Ética de Inteligência Artificial; Jornalista de tecnologia, dados e IA'
-title_en = 'Artificial Intelligence Ethics Researcher; Tech, data and AI journalist'
+title_en = 'Artificial Intelligence Ethics Researcher; Tech, data, and AI journalist'
 
 description_pt = 'Pesquisador em Ética de IA e Jornalista'
 description_en = 'AI Ethics Researcher, Journalist'
