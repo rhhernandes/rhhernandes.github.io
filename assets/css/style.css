@@ -89,6 +89,15 @@ main {
     pointer-events: auto;
 }
 
+.page-home .site-header--deferred:not(.nav-visible) {
+    height: 30px;
+    overflow: hidden;
+}
+
+.page-home .site-header--deferred.nav-visible {
+    height: auto;
+}
+
 .site-nav {
     display: flex;
     flex-wrap: wrap;
@@ -109,6 +118,10 @@ main {
 
 .hero {
     padding: 3.25rem 0 2.5rem;
+}
+
+.page-home .hero {
+    padding-top: 1.65rem;
 }
 
 .hero-grid {
@@ -257,7 +270,7 @@ main {
 }
 
 .section-title {
-    padding-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
 }
 
 .section-title h1 {
@@ -266,6 +279,14 @@ main {
 
 .section {
     padding: 3.2rem 0;
+}
+
+.section.section-title + .section {
+    padding-top: 0.2rem;
+}
+
+.section h2 {
+    margin-top: 0;
 }
 .feature-card h3 a {
     text-decoration: none;

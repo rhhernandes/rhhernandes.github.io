@@ -128,6 +128,7 @@ def load_articles() -> list[dict[str, object]]:
                     "date": when,
                     "highlight": str(row["Highlight"]).strip().lower() == "true",
                     "category": sanitize(row["Category"]).lower(),
+                    "show": str(row.get("Show", "true")).strip().lower() == "true",
                 }
             )
     return articles
@@ -222,11 +223,13 @@ def render_layout(
     meta_description: str | None = None,
     extra_body_end: str = "",
     defer_nav: bool = False,
+    body_class: str = "",
 ) -> str:
     description = meta_description or "Portfolio of Raphael Hernandes, AI ethics researcher and journalist."
     header_classes = "site-header"
     if defer_nav:
         header_classes += " site-header--deferred"
+    body_attr = f' class="{body_class.strip()}"' if body_class.strip() else ""
     return f"""<!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -240,7 +243,7 @@ def render_layout(
             <link rel=\"stylesheet\" href=\"assets/css/style.css\" />
             <script src=\"https://kit.fontawesome.com/c796ba7827.js\" crossorigin=\"anonymous\"></script>
 </head>
-<body>
+<body{body_attr}>
     <header class=\"{header_classes}\">
         <div class=\"container\">
             <a class=\"brand\" href=\"index.html\">Raphael Hernandes</a>
@@ -345,13 +348,14 @@ def build_home() -> None:
         meta_description="Portfolio and bio of Raphael Hernandes, AI ethics researcher and data journalist.",
         extra_body_end=nav_script,
         defer_nav=True,
+        body_class="page-home",
     )
     OUTPUTS["home"].write_text(html, encoding="utf-8")
 
 
 def build_category_page(category: str, *, title: str, filename: str) -> None:
     all_articles = load_articles()
-    scoped = [item for item in all_articles if item["category"] == category]
+    scoped = [item for item in all_articles if item["category"] == category and item.get("show", True)]
     scoped.sort(key=lambda item: item["date"], reverse=True)
     highlights = [item for item in scoped if item["highlight"]]
     others = [item for item in scoped if not item["highlight"]]
