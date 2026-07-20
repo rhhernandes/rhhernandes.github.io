@@ -1,20 +1,124 @@
-# Raphael Hernandes Portfolio
+# Raphael Hernandes — Personal Site
 
-Static site for [raphaelhernandes.com](https://raphaelhernandes.com) built with a custom, mobile-first theme.
+Static site for [raphaelhernandes.com](https://raphaelhernandes.com), built with a single Python script (stdlib only) and deployed via GitHub Pages.
 
-## Overview
+## How it works
 
-- `build_site.py` generates the three English pages (`index.html`, `academic.html`, `journalism.html`) using the data in `articles.csv`.
-- `articles.csv` now includes a `Category` column (`academic` or `journalism`) alongside the existing `Highlight` field to drive featured items.
-- Styles live in `assets/css/style.css`; the build also loads Font Awesome via kit for iconography.
+`build_site.py` generates every page from the content files. Layout lives in the script; **all page copy lives in `copy.toml`**; all list-based content lives in `articles.csv` and `data/*.json`. Text and entries can be changed without touching layout code.
 
-## Update Workflow
+```bash
+python3 build_site.py
+```
 
-1. Edit `articles.csv` with new work, setting `Highlight` for feature cards as needed.
-2. Run `python build_site.py` to regenerate the static pages.
-3. Commit the updated files and publish via GitHub Pages.
+Pages generated: `index.html`, `about.html`, `research.html`, `journalism.html`, `speaking.html`, `recognition.html`, `teaching.html`, and `academic.html` (a redirect to `research.html`, preserving the old URL).
+
+## Updating content
+
+### All page copy — `copy.toml`
+
+Every piece of text on the site — headings, intros, the About narrative, topic cards, meta titles/descriptions, the enquiries band, footer, nav labels, image alt text — lives in `copy.toml`, organised page by page with the shared sections (header/nav, enquiries band, footer) at the end. Edit the text there and rebuild. Text is inserted into the HTML as-is: write `&` as `&amp;` and use plain `<a href="...">` tags for links.
+
+### Journalism pieces & research publications — `articles.csv`
+
+Same format as before. `Category` is `Journalism` or `Academic` (Academic entries populate the Research page's publications list), `Highlight` puts a piece in the Journalism highlights grid, `Show` toggles visibility.
+
+### Talks & engagements — `data/talks.json`
+
+```json
+{
+  "title": "Talk title (optional)",
+  "event": "Event or programme name (optional)",
+  "venue": "Alan Turing Institute",
+  "location": "London",
+  "date": "May 2026",
+  "url": "https://... (optional)",
+  "notes": "One-line description (optional)"
+}
+```
+
+Only `venue` is required — entries with just a venue render as a clean venue list. `date` is free text, displayed as written.
+
+### Awards & honours — `data/awards.json`
+
+```json
+{
+  "title": "Award name",
+  "org": "Awarding body",
+  "year": "2026",
+  "detail": "One-line description.",
+  "url": "https://... (optional)"
+}
+```
+
+### Press about me — `data/press.json`
+
+```json
+{
+  "outlet": "Outlet name",
+  "title": "Headline",
+  "date": "Jun 2026",
+  "url": "https://...",
+  "note": "Optional context line"
+}
+```
+
+The "In the media" section on the Recognition page shows a placeholder until this file has at least one entry.
+
+### Testimonials — `data/testimonials.json`
+
+```json
+{
+  "quote": "What they said.",
+  "name": "Person Name",
+  "role": "Title, Organisation"
+}
+```
+
+The testimonials section on the Speaking page appears automatically once this file has at least one entry.
+
+### Teaching — `data/teaching.json`
+
+```json
+{
+  "show_in_nav": false,
+  "entries": [
+    {
+      "course": "Course name",
+      "role": "Supervisor / Lecturer / …",
+      "institution": "University of Cambridge",
+      "term": "Michaelmas 2026",
+      "description": "One-line description.",
+      "url": "https://... (optional)"
+    }
+  ]
+}
+```
+
+`teaching.html` always builds, but only joins the navigation when `show_in_nav` is `true` **or** `entries` is non-empty.
+
+### Enquiries banner
+
+The black "Speaking & advisory enquiries" band that closes every page is edited in `copy.toml` under `[shared.enquiries]` — it updates site-wide on rebuild. `{email}` in the button text is replaced at build time with the contact address.
+
+### Contact email & socials
+
+`CONTACT_EMAIL` and `SOCIAL_LINKS` are constants at the top of `build_site.py`.
+
+### Images
+
+`static/img/rh.jpg` is the full-resolution portrait (used for social-share previews); `rh-640.jpg` is the optimised display version. If the portrait changes, regenerate with:
+
+```bash
+sips -Z 640 -s format jpeg -s formatOptions 82 static/img/rh.jpg --out static/img/rh-640.jpg
+```
+
+## Publish
+
+1. Edit content files.
+2. `python3 build_site.py`
+3. Commit and push — GitHub Pages serves the result.
 
 ## Attribution
 
-- Icons provided by [Font Awesome](https://fontawesome.com/).
-- Website refreshed in October 2025 with the assistance of Generative AI (GPT-5-Codex).
+- Icons by [Font Awesome](https://fontawesome.com/); type: Source Serif 4 & Source Sans 3.
+- Website overhauled in July 2026 with the assistance of Claude Code.

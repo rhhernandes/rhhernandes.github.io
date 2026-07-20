@@ -1,23 +1,29 @@
 from __future__ import annotations
 
 import csv
+import json
+import tomllib
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
+from urllib.parse import quote
 
 ROOT = Path(__file__).parent
+DATA = ROOT / "data"
 ARTICLES_CSV = ROOT / "articles.csv"
-OUTPUTS = {
-    "home": ROOT / "index.html",
-    "academic": ROOT / "academic.html",
-    "journalism": ROOT / "journalism.html",
-}
 
-NAV_ITEMS = [
-    ("Home", "index.html"),
-    ("Academic Work", "academic.html"),
-    ("Journalism Work", "journalism.html"),
-]
+# All copy lives in copy.toml; this script holds structure and layout only.
+COPY = tomllib.loads((ROOT / "copy.toml").read_text(encoding="utf-8"))
+SHARED = COPY["shared"]
+
+SITE_URL = "https://raphaelhernandes.com"
+SITE_NAME = "Raphael Hernandes"
+CONTACT_EMAIL = "hello@raphaelhernandes.com"
+ENQUIRY_MAILTO = (
+    f"mailto:{CONTACT_EMAIL}?subject={quote(SHARED['enquiries']['mail_subject'], safe='')}"
+)
+PORTRAIT_DISPLAY = "static/img/rh-640.jpg"
+PORTRAIT_FULL = "static/img/rh.jpg"
 
 SOCIAL_LINKS = [
     ("LinkedIn", "https://www.linkedin.com/in/raphaelhernandes/",
@@ -32,17 +38,7 @@ SOCIAL_LINKS = [
      "fa-solid fa-building-columns"),
 ]
 
-BIO_TEXT = """I am an artificial intelligence (AI) ethics researcher and data journalist specializing in the intersections between AI, journalism, and society. My work combines in-depth reporting and quantitative analysis to explore the ethical implications and societal impacts of AI technologies.
-
-I am currently pursuing a <a href="https://www.cdh.cam.ac.uk/about/people/raphael-hernandes/" target="_blank" rel="noopener">PhD at Cambridge Digital Humanities</a>, University of Cambridge, where my research examines how AI reshapes journalism, information environments, and epistemic security. My work is supported by a <a href="https://www.hardingscholars.fund.cam.ac.uk/raphael-hernandes-2025-cohort" target="_blank" rel="noopener">Harding Distinguished Postgraduate Scholarship</a>.
-
-My journalism career includes roles as a Data Journalist at <a href="https://www.theguardian.com/profile/raphael-hernandes" target="_blank" rel="noopener">The Guardian</a> (UK) and as Editor-at-Large at <a href="https://www1.folha.uol.com.br/autores/raphael-hernandes.shtml" target="_blank" rel="noopener">Folha de S.Paulo</a> (Brazil), where I led innovative data- and AI-driven newsroom projects and reported on the intersections of technology, media, and society.
-
-I hold an MPhil in Ethics of AI, Data, and Algorithms from Cambridge, graduating with distinction and receiving the <a href="https://www.lcfi.ac.uk/education/mphil/huw-price-prize" target="_blank" rel="noopener">Huw Price Prize</a> for best overall performance.
-
-As a Research Assistant at the Leverhulme Centre for the Future of Intelligence (Cambridge), I analyzed media coverage of AI and examined the use of generative systems in political communication, co-creating a <a href="https://www.desirableai.com/journalism-toolkit" target="_blank" rel="noopener">toolkit to help journalists responsibly adopt AI</a> technologies in their work.
-
-I regularly speak at technology and journalism conferences, engaging diverse audiences to foster a critical understanding of AI's role in society. I am committed to empowering the public through technology, data, and informed discourse on AI ethics and responsible innovation."""
+GOOGLE_SCHOLAR_URL = "https://scholar.google.com/citations?user=arCHs-gAAAAJ&hl=en"
 
 SCROLL_REVEAL_SCRIPT = """
     <script>
@@ -93,6 +89,10 @@ SCROLL_REVEAL_SCRIPT = """
 """
 
 
+# ---------------------------------------------------------------------------
+# Data loading
+# ---------------------------------------------------------------------------
+
 def sanitize(value: str) -> str:
     cleaned = value.strip()
     replacements = {
@@ -134,16 +134,53 @@ def load_articles() -> list[dict[str, object]]:
     return articles
 
 
+def load_json(filename: str, default: object) -> object:
+    path = DATA / filename
+    if not path.exists():
+        return default
+    with path.open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def format_date(value: datetime) -> str:
     return value.strftime("%b %d, %Y")
 
 
+# ---------------------------------------------------------------------------
+# Navigation / layout
+# ---------------------------------------------------------------------------
+
+def nav_items() -> list[tuple[str, str]]:
+    items = [(item["label"], item["href"]) for item in SHARED["header"]["nav"]]
+    teaching = load_json("teaching.json", {"show_in_nav": False, "entries": []})
+    if teaching.get("show_in_nav") or teaching.get("entries"):
+        extra = SHARED["header"]["teaching_nav"]
+        items.append((extra["label"], extra["href"]))
+    return items
+
+
 def render_nav(current: str) -> str:
     links = []
-    for label, href in NAV_ITEMS:
+    for label, href in nav_items():
         state = " aria-current=\"page\"" if href == current else ""
         links.append(f'<a href="{href}"{state}>{label}</a>')
+    links.append(f'<a class="nav-cta" href="#enquiries">{SHARED["header"]["nav_cta"]}</a>')
     return "".join(links)
+
+
+def enquiries_band() -> str:
+    """Shared enquiries CTA; copy in copy.toml under [shared.enquiries]."""
+    c = SHARED["enquiries"]
+    return f"""<section class="cta-band" id="enquiries">
+    <div class="container narrow">
+        <p class="kicker kicker--light">{c["kicker"]}</p>
+        <h2>{c["heading"]}</h2>
+        <p>{c["body"]}</p>
+        <p class="cta-actions"><a class="button button--light" href="{ENQUIRY_MAILTO}">{c["button"].format(email=CONTACT_EMAIL)}</a></p>
+        <p class="cta-alt">{c["alt_html"]}</p>
+    </div>
+</section>
+"""
 
 
 def render_social_links(extra_class: str = "") -> str:
@@ -163,29 +200,111 @@ def render_social_links(extra_class: str = "") -> str:
     return f'<ul class="{classes}">{"".join(items)}</ul>'
 
 
+def render_layout(
+    *,
+    page_title: str,
+    description: str,
+    canonical_path: str,
+    current: str,
+    main: str,
+    body_class: str = "",
+    extra_head: str = "",
+) -> str:
+    body_attr = f' class="{body_class.strip()}"' if body_class.strip() else ""
+    canonical = f"{SITE_URL}/{canonical_path}" if canonical_path else f"{SITE_URL}/"
+    footer_copy = SHARED["footer"]["copyright"].format(year=f"{datetime.now():%Y}")
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="{description}" />
+    <title>{page_title}</title>
+    <link rel="canonical" href="{canonical}" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <meta property="og:site_name" content="{SITE_NAME}" />
+    <meta property="og:title" content="{page_title}" />
+    <meta property="og:description" content="{description}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{canonical}" />
+    <meta property="og:image" content="{SITE_URL}/{PORTRAIT_FULL}" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="https://kit.fontawesome.com/c796ba7827.js" crossorigin="anonymous"></script>
+    {extra_head}
+</head>
+<body{body_attr}>
+    <a class="skip-link" href="#main">{SHARED["header"]["skip_link"]}</a>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html">{SHARED["header"]["brand"]}</a>
+            <nav class="site-nav" aria-label="Primary">{render_nav(current)}</nav>
+        </div>
+    </header>
+    <main id="main">
+        {main}
+        {enquiries_band()}
+    </main>
+    <footer class="site-footer">
+        <div class="container">
+            {render_social_links('social-links-footer')}
+            <p class="footer-copy">{footer_copy}</p>
+        </div>
+    </footer>
+    {SCROLL_REVEAL_SCRIPT}
+</body>
+</html>"""
+
+
+# ---------------------------------------------------------------------------
+# Shared components
+# ---------------------------------------------------------------------------
+
+def page_header(kicker: str, title: str, intro_paragraphs: list[str] | None = None) -> str:
+    intro = ""
+    if intro_paragraphs:
+        intro_html = "\n    " + "\n    ".join(f"<p>{p}</p>" for p in intro_paragraphs) + "\n    "
+        intro = f'<div class="page-intro">{intro_html}</div>'
+    return f"""
+    <section class="section page-title">
+        <div class="container narrow">
+            <p class="kicker">{kicker}</p>
+            <h1>{title}</h1>
+            {intro}
+        </div>
+    </section>
+    """
+
+
 def render_feature_cards(items: Iterable[dict[str, object]]) -> str:
     cards: list[str] = []
+    labels = SHARED["cards"]
     for article in items:
         cards.append(
             """
             <article class="feature-card" data-reveal>
                 <div class="feature-media">
-                    <img src="{photo}" alt="Illustration for {title}" loading="lazy" />
+                    <img src="{photo}" alt="{alt}" loading="lazy" />
                 </div>
                 <div class="feature-content">
                     <p class="feature-meta">{date} · {publication}</p>
                     <h3><a href="{url}" target="_blank" rel="noopener">{title}</a></h3>
                     <p>{description}</p>
-                    <a class="feature-link" href="{url}" target="_blank" rel="noopener">Read more<span aria-hidden="true"> →</span></a>
+                    <a class="feature-link" href="{url}" target="_blank" rel="noopener">{read_more}<span aria-hidden="true"> →</span></a>
                 </div>
             </article>
             """.format(
                 photo=article["photo"],
+                alt=labels["illustration_alt"].format(title=article["title"]),
                 title=article["title"],
                 publication=article["publication"],
                 description=article["description"],
                 url=article["url"],
                 date=format_date(article["date"]),
+                read_more=labels["read_more"],
             )
         )
     return "".join(cards)
@@ -215,208 +334,453 @@ def render_article_list(items: Iterable[dict[str, object]]) -> str:
     return "".join(entries)
 
 
-def render_layout(
-    *,
-    page_title: str,
-    current: str,
-    main: str,
-    meta_description: str | None = None,
-    extra_body_end: str = "",
-    defer_nav: bool = False,
-    body_class: str = "",
-) -> str:
-    description = meta_description or "Portfolio of Raphael Hernandes, AI ethics researcher and journalist."
-    header_classes = "site-header"
-    if defer_nav:
-        header_classes += " site-header--deferred"
-    body_attr = f' class="{body_class.strip()}"' if body_class.strip() else ""
-    return f"""<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-    <meta charset=\"utf-8\" />
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-    <meta name=\"description\" content=\"{description}\" />
-    <title>{page_title}</title>
-    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />
-    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin />
-        <link href=\"https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600;700&display=swap\" rel=\"stylesheet\" />
-            <link rel=\"stylesheet\" href=\"assets/css/style.css\" />
-            <script src=\"https://kit.fontawesome.com/c796ba7827.js\" crossorigin=\"anonymous\"></script>
-</head>
-<body{body_attr}>
-    <header class=\"{header_classes}\">
-        <div class=\"container\">
-            <a class=\"brand\" href=\"index.html\">Raphael Hernandes</a>
-            <nav class=\"site-nav\">{render_nav(current)}</nav>
-        </div>
-    </header>
-    <main>
-        {main}
-    </main>
-    <footer class=\"site-footer\">
-        <div class=\"container\">
-                <p>© {datetime.now():%Y} Raphael Hernandes. All rights reserved.</p>
-                {render_social_links('social-links-footer')}
-        </div>
-    </footer>
-        {SCROLL_REVEAL_SCRIPT}
-    {extra_body_end}
-</body>
-</html>"""
+def render_entry(*, title: str, url: str = "", meta: str = "", desc: str = "") -> str:
+    if url:
+        heading = f'<a class="entry-title" href="{url}" target="_blank" rel="noopener">{title}</a>'
+    else:
+        heading = f'<span class="entry-title">{title}</span>'
+    meta_html = f'<p class="entry-meta">{meta}</p>' if meta else ""
+    desc_html = f'<p class="entry-desc">{desc}</p>' if desc else ""
+    return f'<li class="entry" data-reveal>{meta_html}{heading}{desc_html}</li>'
 
+
+def render_topics(topics: list[dict[str, str]]) -> str:
+    return "".join(
+        f"""
+                <div class="topic" data-reveal>
+                    <h3>{t["title"]}</h3>
+                    <p>{t["desc"]}</p>
+                </div>"""
+        for t in topics
+    )
+
+
+# ---------------------------------------------------------------------------
+# Pages
+# ---------------------------------------------------------------------------
 
 def build_home() -> None:
+    c = COPY["index"]
+    schema_copy = c["schema"]
+    person_schema = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": SITE_NAME,
+        "url": f"{SITE_URL}/",
+        "image": f"{SITE_URL}/{PORTRAIT_FULL}",
+        "jobTitle": schema_copy["job_titles"],
+        "worksFor": {"@type": "NewsMediaOrganization", "name": schema_copy["works_for"]},
+        "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": schema_copy["affiliation"],
+            "department": schema_copy["affiliation_department"],
+        },
+        "alumniOf": {"@type": "CollegeOrUniversity", "name": schema_copy["alumni_of"]},
+        "award": schema_copy["awards"],
+        "email": f"mailto:{CONTACT_EMAIL}",
+        "sameAs": [url for _, url, _ in SOCIAL_LINKS],
+    }
+    schema_html = (
+        '<script type="application/ld+json">'
+        + json.dumps(person_schema, ensure_ascii=False)
+        + "</script>"
+    )
+
+    hero_copy = c["hero"]
     hero = f"""
-    <section class=\"hero\">
-        <div class=\"container hero-grid\">
-            <div class=\"hero-copy\">
-                <h1>Raphael Hernandes</h1>
-                <p class=\"hero-role\">AI ETHICS RESEARCHER · DATA, TECH JOURNALIST</p>
-                {render_social_links('social-links-hero')}
-                <div class=\"hero-links\">
-                    <a href=\"academic.html\">Academic Work</a>
-                    <span class="hero-links-separator" aria-hidden="true">·</span>
-                    <a href=\"journalism.html\">Journalism Work</a>
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-copy">
+                <p class="kicker">{hero_copy["kicker"]}</p>
+                <h1>{hero_copy["heading"]}</h1>
+                <p class="lede">{hero_copy["lede"]}</p>
+                <p class="hero-summary">{hero_copy["summary"]}</p>
+                <div class="hero-actions">
+                    <a class="button" href="#enquiries">{hero_copy["button"]}</a>
+                    <a class="text-link" href="about.html">{hero_copy["text_link"]}<span aria-hidden="true"> →</span></a>
                 </div>
             </div>
-            <div class=\"hero-media\">
-                <img src=\"static/img/rh.jpg\" alt=\"Portrait of Raphael Hernandes\" loading=\"lazy\" />
+            <div class="hero-media">
+                <img src="{PORTRAIT_DISPLAY}" alt="{SHARED["cards"]["portrait_alt"]}" width="640" height="640" fetchpriority="high" />
             </div>
         </div>
     </section>
     """
-    bio_paragraphs = [segment.strip()
-                      for segment in BIO_TEXT.split("\n\n") if segment.strip()]
-    bio = "".join(
-        f"<p data-reveal>{paragraph}</p>" for paragraph in bio_paragraphs)
-    bio_section = f"""
-    <section class=\"section bio-section\">
-        <div class=\"container narrow\">
-            <h2>Bio</h2>
-            {bio}
+
+    cred_items = "".join(
+        f"""
+                <li>
+                    <p class="cred-label">{item["label"]}</p>
+                    <p class="cred-detail">{item["detail"]}</p>
+                </li>"""
+        for item in c["credentials"]["items"]
+    )
+    credentials = f"""
+    <section class="cred-section" aria-label="{c["credentials"]["aria_label"]}">
+        <div class="container">
+            <ul class="cred-strip">{cred_items}
+            </ul>
         </div>
     </section>
     """
-    nav_script = """
-    <script>
-    (function() {
-        var header = document.querySelector('.site-header');
-        var heroImage = document.querySelector('.hero-media img');
-        if (!header || !heroImage || !header.classList.contains('site-header--deferred')) { return; }
 
-        function computeThreshold() {
-            var rect = heroImage.getBoundingClientRect();
-            var imageHeight = heroImage.offsetHeight || heroImage.naturalHeight || 0;
-            return window.scrollY + rect.top + (imageHeight / 2);
-        }
-
-        var threshold = 0;
-
-        function recalc() {
-            threshold = computeThreshold();
-            toggle();
-        }
-
-        function toggle() {
-            if (threshold <= 0) {
-                header.classList.remove('nav-visible');
-                return;
-            }
-
-            if (window.scrollY >= threshold) {
-                header.classList.add('nav-visible');
-            } else {
-                header.classList.remove('nav-visible');
-            }
-        }
-
-        if (!heroImage.complete) {
-            heroImage.addEventListener('load', recalc);
-        }
-
-        recalc();
-        window.addEventListener('scroll', toggle, { passive: true });
-        window.addEventListener('resize', recalc);
-    })();
-    </script>
+    index_html = "".join(
+        f"""
+        <li data-reveal>
+            <a class="index-row" href="{row["href"]}">
+                <span class="index-title">{row["title"]}<span class="index-arrow" aria-hidden="true"> →</span></span>
+                <span class="index-desc">{row["desc"]}</span>
+            </a>
+        </li>
+        """
+        for row in c["explore"]["rows"]
+    )
+    section_index = f"""
+    <section class="section">
+        <div class="container">
+            <h2 class="sr-only">{c["explore"]["heading_sr"]}</h2>
+            <ul class="index-list">{index_html}</ul>
+        </div>
+    </section>
     """
-    content = hero + bio_section
+
     html = render_layout(
-        page_title="Raphael Hernandes · AI Ethics Researcher & Journalist",
+        page_title=c["meta"]["title"],
+        description=c["meta"]["description"],
+        canonical_path="",
         current="index.html",
-        main=content,
-        meta_description="Portfolio and bio of Raphael Hernandes, AI ethics researcher and data journalist.",
-        extra_body_end=nav_script,
-        defer_nav=True,
+        main=hero + credentials + section_index,
         body_class="page-home",
+        extra_head=schema_html,
     )
-    OUTPUTS["home"].write_text(html, encoding="utf-8")
+    (ROOT / "index.html").write_text(html, encoding="utf-8")
 
 
-def build_category_page(category: str, *, title: str, filename: str) -> None:
-    all_articles = load_articles()
-    scoped = [item for item in all_articles if item["category"] == category and item.get("show", True)]
-    scoped.sort(key=lambda item: item["date"], reverse=True)
-    highlights = [item for item in scoped if item["highlight"]]
-    others = [item for item in scoped if not item["highlight"]]
-
-    header_section = (
-        """
-        <section class=\"section section-title\">
-            <div class=\"container\">
-                <h1>{title}</h1>
-            </div>
-        </section>
-        """.format(title=title)
-    )
-
-    if highlights:
-        highlight_section = (
-            """
-            <section class=\"section\">
-                <div class=\"container\">
-                    <h2>Highlights</h2>
-                    <div class=\"feature-grid\">{cards}</div>
+def build_about() -> None:
+    c = COPY["about"]
+    body = "".join(f"<p data-reveal>{p}</p>" for p in c["body"]["paragraphs"])
+    content = page_header(c["header"]["kicker"], c["header"]["title"]) + f"""
+    <section class="section about-section">
+        <div class="container narrow">
+            <div class="about-grid">
+                <figure class="about-media">
+                    <img src="{PORTRAIT_DISPLAY}" alt="{SHARED["cards"]["portrait_alt"]}" width="640" height="640" loading="lazy" />
+                    <figcaption class="img-credit">{c["body"]["photo_credit"]}</figcaption>
+                </figure>
+                <div class="about-body">
+                    {body}
+                    <blockquote class="pull-quote" data-reveal>{c["body"]["pull_quote"]}</blockquote>
                 </div>
-            </section>
-            """.format(cards=render_feature_cards(highlights))
-        )
-    else:
-        highlight_section = """
-            <section class=\"section\">
-                <div class=\"container\">
-                    <div class=\"empty-state\">Highlights coming soon.</div>
-                </div>
-            </section>
-        """
-
-    list_section = ""
-    if others:
-        list_section = """
-        <section class=\"section\">
-            <div class=\"container\">
-                <h2>More selected work</h2>
-                <ul class=\"article-list\">{items}</ul>
             </div>
-        </section>
-        """.format(items=render_article_list(others))
+        </div>
+    </section>
+    """
 
-    content = header_section + highlight_section + list_section
     html = render_layout(
-        page_title=f"{title} · Raphael Hernandes",
-        current=filename,
+        page_title=c["meta"]["title"],
+        description=c["meta"]["description"],
+        canonical_path="about.html",
+        current="about.html",
         main=content,
     )
-    OUTPUTS_KEY = "academic" if category == "academic" else "journalism"
-    OUTPUTS[OUTPUTS_KEY].write_text(html, encoding="utf-8")
+    (ROOT / "about.html").write_text(html, encoding="utf-8")
+
+
+def build_research() -> None:
+    c = COPY["research"]
+    articles = [a for a in load_articles() if a["category"] == "academic" and a["show"]]
+    articles.sort(key=lambda item: item["date"], reverse=True)
+    publications = "".join(
+        render_entry(
+            title=str(a["title"]),
+            url=str(a["url"]),
+            meta=f"{a['date']:%b %Y} · {a['publication']}",
+            desc=str(a["description"]),
+        )
+        for a in articles
+    )
+
+    themes = f"""
+    <section class="section">
+        <div class="container">
+            <p class="kicker">{c["themes"]["kicker"]}</p>
+            <h2>{c["themes"]["heading"]}</h2>
+            <div class="topic-grid">{render_topics(c["themes"]["topics"])}
+            </div>
+        </div>
+    </section>
+    """
+
+    pubs_section = f"""
+    <section class="section">
+        <div class="container">
+            <p class="kicker">{c["publications"]["kicker"]}</p>
+            <h2>{c["publications"]["heading"]}</h2>
+            <ul class="entry-list">{publications}</ul>
+            <p class="section-footnote"><a class="text-link" href="{GOOGLE_SCHOLAR_URL}" target="_blank" rel="noopener">{c["publications"]["scholar_link"]}<span aria-hidden="true"> →</span></a></p>
+        </div>
+    </section>
+    """
+
+    content = page_header(c["header"]["kicker"], c["header"]["title"], c["header"]["intro"]) + themes + pubs_section
+    html = render_layout(
+        page_title=c["meta"]["title"],
+        description=c["meta"]["description"],
+        canonical_path="research.html",
+        current="research.html",
+        main=content,
+    )
+    (ROOT / "research.html").write_text(html, encoding="utf-8")
+
+
+def build_journalism() -> None:
+    c = COPY["journalism"]
+    articles = [a for a in load_articles() if a["category"] == "journalism" and a["show"]]
+    articles.sort(key=lambda item: item["date"], reverse=True)
+    highlights = [a for a in articles if a["highlight"]]
+    others = [a for a in articles if not a["highlight"]]
+
+    highlight_section = f"""
+    <section class="section">
+        <div class="container">
+            <p class="kicker">{c["highlights"]["kicker"]}</p>
+            <h2 class="sr-only">{c["highlights"]["heading_sr"]}</h2>
+            <div class="feature-grid">{render_feature_cards(highlights)}</div>
+        </div>
+    </section>
+    """ if highlights else ""
+
+    list_section = f"""
+    <section class="section">
+        <div class="container">
+            <h2>{c["more"]["heading"]}</h2>
+            <ul class="article-list">{render_article_list(others)}</ul>
+        </div>
+    </section>
+    """ if others else ""
+
+    content = page_header(c["header"]["kicker"], c["header"]["title"], c["header"]["intro"]) + highlight_section + list_section
+    html = render_layout(
+        page_title=c["meta"]["title"],
+        description=c["meta"]["description"],
+        canonical_path="journalism.html",
+        current="journalism.html",
+        main=content,
+    )
+    (ROOT / "journalism.html").write_text(html, encoding="utf-8")
+
+
+def build_speaking() -> None:
+    c = COPY["speaking"]
+    talks = load_json("talks.json", [])
+    testimonials = load_json("testimonials.json", [])
+
+    topics = f"""
+    <section class="section">
+        <div class="container">
+            <p class="kicker">{c["topics"]["kicker"]}</p>
+            <h2>{c["topics"]["heading"]}</h2>
+            <div class="topic-grid">{render_topics(c["topics"]["items"])}
+            </div>
+        </div>
+    </section>
+    """
+
+    format_items = "".join(
+        f"""
+                <li data-reveal>
+                    <p class="cred-label">{item["label"]}</p>
+                    <p class="cred-detail">{item["detail"]}</p>
+                </li>"""
+        for item in c["formats"]["items"]
+    )
+    formats = f"""
+    <section class="section">
+        <div class="container">
+            <p class="kicker">{c["formats"]["kicker"]}</p>
+            <h2>{c["formats"]["heading"]}</h2>
+            <ul class="format-grid">{format_items}
+            </ul>
+        </div>
+    </section>
+    """
+
+    talk_entries = []
+    for talk in talks:
+        title = talk.get("title") or talk.get("event") or talk.get("venue", "")
+        meta_parts = [talk.get("date", "")]
+        if talk.get("title") or talk.get("event"):
+            meta_parts.append(talk.get("venue", ""))
+        meta_parts.append(talk.get("location", ""))
+        talk_entries.append(
+            render_entry(
+                title=title,
+                url=talk.get("url", ""),
+                meta=" · ".join(p for p in meta_parts if p),
+                desc=talk.get("notes", ""),
+            )
+        )
+    talks_section = f"""
+    <section class="section">
+        <div class="container">
+            <p class="kicker">{c["talks"]["kicker"]}</p>
+            <h2>{c["talks"]["heading"]}</h2>
+            <ul class="entry-list">{''.join(talk_entries)}</ul>
+        </div>
+    </section>
+    """ if talk_entries else ""
+
+    testimonial_entries = "".join(
+        f"""
+        <blockquote class="testimonial" data-reveal>
+            <p>{t.get('quote', '')}</p>
+            <footer>{t.get('name', '')}{' · ' + t.get('role', '') if t.get('role') else ''}</footer>
+        </blockquote>
+        """
+        for t in testimonials
+    )
+    # Testimonials render automatically once data/testimonials.json has entries.
+    testimonials_section = f"""
+    <section class="section">
+        <div class="container narrow">
+            <p class="kicker">{c["testimonials"]["kicker"]}</p>
+            <h2>{c["testimonials"]["heading"]}</h2>
+            {testimonial_entries}
+        </div>
+    </section>
+    """ if testimonials else ""
+
+    content = page_header(c["header"]["kicker"], c["header"]["title"], c["header"]["intro"]) + topics + formats + talks_section + testimonials_section
+    html = render_layout(
+        page_title=c["meta"]["title"],
+        description=c["meta"]["description"],
+        canonical_path="speaking.html",
+        current="speaking.html",
+        main=content,
+    )
+    (ROOT / "speaking.html").write_text(html, encoding="utf-8")
+
+
+def build_recognition() -> None:
+    c = COPY["recognition"]
+    awards = load_json("awards.json", [])
+    press = load_json("press.json", [])
+
+    press_entries = "".join(
+        render_entry(
+            title=p.get("title", ""),
+            url=p.get("url", ""),
+            meta=" · ".join(x for x in [p.get("date", ""), p.get("outlet", "")] if x),
+            desc=p.get("note", ""),
+        )
+        for p in press
+    )
+    if press_entries:
+        press_listing = f'<ul class="entry-list">{press_entries}</ul>'
+    else:
+        press_listing = f'<div class="empty-state">{c["press"]["empty"]}</div>'
+    press_section = f"""
+    <section class="section">
+        <div class="container">
+            <h2>{c["press"]["heading"]}</h2>
+            {press_listing}
+        </div>
+    </section>
+    """
+
+    award_entries = "".join(
+        render_entry(
+            title=a.get("title", ""),
+            url=a.get("url", ""),
+            meta=" · ".join(p for p in [a.get("year", ""), a.get("org", "")] if p),
+            desc=a.get("detail", ""),
+        )
+        for a in awards
+    )
+    awards_section = f"""
+    <section class="section">
+        <div class="container">
+            <h2>{c["awards"]["heading"]}</h2>
+            <ul class="entry-list">{award_entries}</ul>
+        </div>
+    </section>
+    """ if awards else ""
+
+    content = page_header(c["header"]["kicker"], c["header"]["title"], c["header"]["intro"]) + press_section + awards_section
+    html = render_layout(
+        page_title=c["meta"]["title"],
+        description=c["meta"]["description"],
+        canonical_path="recognition.html",
+        current="recognition.html",
+        main=content,
+    )
+    (ROOT / "recognition.html").write_text(html, encoding="utf-8")
+
+
+def build_teaching() -> None:
+    c = COPY["teaching"]
+    teaching = load_json("teaching.json", {"show_in_nav": False, "entries": []})
+    entries = teaching.get("entries", [])
+
+    entry_html = "".join(
+        render_entry(
+            title=e.get("course", ""),
+            url=e.get("url", ""),
+            meta=" · ".join(p for p in [e.get("term", ""), e.get("role", ""), e.get("institution", "")] if p),
+            desc=e.get("description", ""),
+        )
+        for e in entries
+    )
+    if entry_html:
+        listing = f'<ul class="entry-list">{entry_html}</ul>'
+    else:
+        listing = f'<div class="empty-state">{c["list"]["empty"]}</div>'
+
+    content = page_header(c["header"]["kicker"], c["header"]["title"], c["header"]["intro"]) + f"""
+    <section class="section">
+        <div class="container">
+            {listing}
+        </div>
+    </section>
+    """
+    html = render_layout(
+        page_title=c["meta"]["title"],
+        description=c["meta"]["description"],
+        canonical_path="teaching.html",
+        current="teaching.html",
+        main=content,
+    )
+    (ROOT / "teaching.html").write_text(html, encoding="utf-8")
+
+
+def build_academic_redirect() -> None:
+    """academic.html moved to research.html; keep the old URL working."""
+    c = COPY["academic"]
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{c["page_title"]}</title>
+    <meta http-equiv="refresh" content="0; url=research.html" />
+    <link rel="canonical" href="{SITE_URL}/research.html" />
+    <meta name="robots" content="noindex" />
+</head>
+<body>
+    <p>{c["moved_html"]}</p>
+</body>
+</html>"""
+    (ROOT / "academic.html").write_text(html, encoding="utf-8")
 
 
 def main() -> None:
     build_home()
-    build_category_page("academic", title="Academic Work",
-                        filename="academic.html")
-    build_category_page("journalism", title="Journalism Work",
-                        filename="journalism.html")
+    build_about()
+    build_research()
+    build_journalism()
+    build_speaking()
+    build_recognition()
+    build_teaching()
+    build_academic_redirect()
 
 
 if __name__ == "__main__":

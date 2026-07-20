@@ -1,0 +1,37 @@
+[
+    {
+        "title": "European Press Prize — Innovation Award",
+        "org": "European Press Prize",
+        "year": "2026",
+        "detail": "Laureate, with Guardian colleagues, for a year-long investigation tracing far-right radicalisation across a network of UK Facebook groups, built on analysis of 51,000 posts.",
+        "url": "https://www.theguardian.com/world/ng-interactive/2025/sep/28/inside-the-everyday-facebook-networks-where-far-right-ideas-grow"
+    },
+    {
+        "title": "Huw Price Prize",
+        "org": "University of Cambridge",
+        "year": "2025",
+        "detail": "Best overall performance in the MPhil in Ethics of AI, Data, and Algorithms. Degree awarded with Distinction.",
+        "url": "https://www.lcfi.ac.uk/education/mphil/huw-price-prize"
+    },
+    {
+        "title": "Harding Distinguished Postgraduate Scholarship",
+        "org": "University of Cambridge",
+        "year": "2025",
+        "detail": "Fully funded doctoral scholarship supporting the PhD at Cambridge Digital Humanities.",
+        "url": "https://www.hardingscholars.fund.cam.ac.uk/raphael-hernandes-2025-cohort"
+    },
+    {
+        "title": "ESET Award for Information Security Journalism — Winner, Brazil",
+        "org": "ESET",
+        "year": "2019",
+        "detail": "For reporting on the cybersecurity debate around Brazil's electronic voting machines ahead of the 2018 election.",
+        "url": "https://www1.folha.uol.com.br/poder/2018/10/urna-eletronica-chega-a-12a-eleicao-no-pais-sob-ataque-inedito.shtml"
+    },
+    {
+        "title": "Prêmio Folha — Winner",
+        "org": "Folha de S.Paulo",
+        "year": "2017",
+        "detail": "For an investigation into the personal-data trail internet users leave behind. Twice more shortlisted, for coverage of ChatGPT (2023) and of platform terms of service (2017).",
+        "url": "https://www1.folha.uol.com.br/tec/2017/10/1928985-rastro-deixado-na-internet-inclui-de-nome-da-mae-a-preferencias-amorosas.shtml"
+    }
+]
