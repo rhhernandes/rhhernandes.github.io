@@ -24,6 +24,7 @@ ENQUIRY_MAILTO = (
 )
 PORTRAIT_DISPLAY = "static/img/rh-640.jpg"
 PORTRAIT_FULL = "static/img/rh.jpg"
+SPEAKING_PHOTO = "static/img/rh-speaking.jpg"
 
 SOCIAL_LINKS = [
     ("LinkedIn", "https://www.linkedin.com/in/raphaelhernandes/",
@@ -39,6 +40,16 @@ SOCIAL_LINKS = [
 ]
 
 GOOGLE_SCHOLAR_URL = "https://scholar.google.com/citations?user=arCHs-gAAAAJ&hl=en"
+
+# Profiles that belong in the Person schema's sameAs (they help search engines
+# tie these identities to one person) but are NOT footer icons.
+PROFILE_URLS = [
+    "https://orcid.org/0009-0005-0323-8326",
+    "https://www.theguardian.com/profile/raphael-hernandes",
+    "https://www1.folha.uol.com.br/autores/raphael-hernandes.shtml",
+    "https://www.lcfi.ac.uk/people/raphael-hernandes-2",
+    "https://www.hardingscholars.fund.cam.ac.uk/raphael-hernandes-2025-cohort",
+]
 
 SCROLL_REVEAL_SCRIPT = """
     <script>
@@ -99,8 +110,6 @@ def sanitize(value: str) -> str:
         "”": '"',
         "“": '"',
         "’": "'",
-        "–": "-",
-        "—": "-",
     }
     for source, target in replacements.items():
         cleaned = cleaned.replace(source, target)
@@ -200,6 +209,45 @@ def render_social_links(extra_class: str = "") -> str:
     return f'<ul class="{classes}">{"".join(items)}</ul>'
 
 
+def person_schema_html(extra_nodes: list[dict] | None = None) -> str:
+    """Person structured data, stamped into every page.
+
+    The stable @id lets crawlers merge the copies into a single entity instead
+    of reading them as several different people.
+    """
+    schema_copy = COPY["index"]["schema"]
+    person = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "@id": f"{SITE_URL}/#person",
+        "name": SITE_NAME,
+        "url": f"{SITE_URL}/",
+        "image": f"{SITE_URL}/{PORTRAIT_FULL}",
+        "description": schema_copy["description"],
+        "jobTitle": schema_copy["job_titles"],
+        "knowsAbout": [
+            {"@type": "Thing", "name": topic["name"], "sameAs": topic["wikipedia"]}
+            if topic.get("wikipedia") else topic["name"]
+            for topic in schema_copy["knows_about"]
+        ],
+        "worksFor": {"@type": "CollegeOrUniversity", "name": schema_copy["works_for"]},
+        "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": schema_copy["affiliation"],
+            "department": schema_copy["affiliation_department"],
+        },
+        "alumniOf": {"@type": "CollegeOrUniversity", "name": schema_copy["alumni_of"]},
+        "award": schema_copy["awards"],
+        "email": f"mailto:{CONTACT_EMAIL}",
+        "sameAs": [url for _, url, _ in SOCIAL_LINKS] + PROFILE_URLS,
+    }
+    nodes = [person] + (extra_nodes or [])
+    return "".join(
+        '<script type="application/ld+json">' + json.dumps(node, ensure_ascii=False) + "</script>"
+        for node in nodes
+    )
+
+
 def render_layout(
     *,
     page_title: str,
@@ -209,16 +257,20 @@ def render_layout(
     main: str,
     body_class: str = "",
     extra_head: str = "",
+    noindex: bool = False,
+    schema: bool = True,
+    schema_nodes: list[dict] | None = None,
 ) -> str:
     body_attr = f' class="{body_class.strip()}"' if body_class.strip() else ""
     canonical = f"{SITE_URL}/{canonical_path}" if canonical_path else f"{SITE_URL}/"
     footer_copy = SHARED["footer"]["copyright"].format(year=f"{datetime.now():%Y}")
+    robots_meta = '\n    <meta name="robots" content="noindex, follow" />' if noindex else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="{description}" />
+    <meta name="description" content="{description}" />{robots_meta}
     <title>{page_title}</title>
     <link rel="canonical" href="{canonical}" />
     <link rel="icon" href="favicon.ico" sizes="any" />
@@ -234,7 +286,7 @@ def render_layout(
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/style.css" />
     <script src="https://kit.fontawesome.com/c796ba7827.js" crossorigin="anonymous"></script>
-    {extra_head}
+    {person_schema_html(schema_nodes) if schema else ""}{extra_head}
 </head>
 <body{body_attr}>
     <a class="skip-link" href="#main">{SHARED["header"]["skip_link"]}</a>
@@ -361,31 +413,6 @@ def render_topics(topics: list[dict[str, str]]) -> str:
 
 def build_home() -> None:
     c = COPY["index"]
-    schema_copy = c["schema"]
-    person_schema = {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": SITE_NAME,
-        "url": f"{SITE_URL}/",
-        "image": f"{SITE_URL}/{PORTRAIT_FULL}",
-        "jobTitle": schema_copy["job_titles"],
-        "worksFor": {"@type": "NewsMediaOrganization", "name": schema_copy["works_for"]},
-        "affiliation": {
-            "@type": "CollegeOrUniversity",
-            "name": schema_copy["affiliation"],
-            "department": schema_copy["affiliation_department"],
-        },
-        "alumniOf": {"@type": "CollegeOrUniversity", "name": schema_copy["alumni_of"]},
-        "award": schema_copy["awards"],
-        "email": f"mailto:{CONTACT_EMAIL}",
-        "sameAs": [url for _, url, _ in SOCIAL_LINKS],
-    }
-    schema_html = (
-        '<script type="application/ld+json">'
-        + json.dumps(person_schema, ensure_ascii=False)
-        + "</script>"
-    )
-
     hero_copy = c["hero"]
     hero = f"""
     <section class="hero">
@@ -401,7 +428,7 @@ def build_home() -> None:
                 </div>
             </div>
             <div class="hero-media">
-                <img src="{PORTRAIT_DISPLAY}" alt="{SHARED["cards"]["portrait_alt"]}" width="640" height="640" fetchpriority="high" />
+                <img src="{PORTRAIT_FULL}" alt="{SHARED["cards"]["portrait_alt"]}" width="640" height="640" fetchpriority="high" />
             </div>
         </div>
     </section>
@@ -451,26 +478,36 @@ def build_home() -> None:
         current="index.html",
         main=hero + credentials + section_index,
         body_class="page-home",
-        extra_head=schema_html,
     )
     (ROOT / "index.html").write_text(html, encoding="utf-8")
 
 
 def build_about() -> None:
     c = COPY["about"]
-    body = "".join(f"<p data-reveal>{p}</p>" for p in c["body"]["paragraphs"])
+    paragraphs = c["body"]["paragraphs"]
+    # Portrait sits between the first and second paragraphs; on wide screens
+    # it floats right and the following text wraps around it (see .about-media).
+    first = f"<p data-reveal>{paragraphs[0]}</p>"
+    rest = "".join(f"<p data-reveal>{p}</p>" for p in paragraphs[1:])
+    figure = f"""<figure class="about-media" data-reveal>
+                    <img src="{PORTRAIT_DISPLAY}" alt="{SHARED["cards"]["portrait_alt"]}" loading="lazy" />
+                    <figcaption class="img-credit">{c["body"]["photo_credit"]}</figcaption>
+                </figure>"""
+    # Optional: set pull_quote in copy.toml to show a pull quote after the body.
+    # Omit the key (or leave it empty) and nothing is rendered.
+    quote = c["body"].get("pull_quote", "").strip()
+    quote_html = (
+        f'\n                <blockquote class="pull-quote" data-reveal>{quote}</blockquote>'
+        if quote
+        else ""
+    )
     content = page_header(c["header"]["kicker"], c["header"]["title"]) + f"""
     <section class="section about-section">
         <div class="container narrow">
-            <div class="about-grid">
-                <figure class="about-media">
-                    <img src="{PORTRAIT_DISPLAY}" alt="{SHARED["cards"]["portrait_alt"]}" width="640" height="640" loading="lazy" />
-                    <figcaption class="img-credit">{c["body"]["photo_credit"]}</figcaption>
-                </figure>
-                <div class="about-body">
-                    {body}
-                    <blockquote class="pull-quote" data-reveal>{c["body"]["pull_quote"]}</blockquote>
-                </div>
+            <div class="about-body">
+                {first}
+                {figure}
+                {rest}{quote_html}
             </div>
         </div>
     </section>
@@ -482,6 +519,14 @@ def build_about() -> None:
         canonical_path="about.html",
         current="about.html",
         main=content,
+        # About is the canonical profile page for the Person node.
+        schema_nodes=[{
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            "@id": f"{SITE_URL}/about.html#profilepage",
+            "url": f"{SITE_URL}/about.html",
+            "mainEntity": {"@id": f"{SITE_URL}/#person"},
+        }],
     )
     (ROOT / "about.html").write_text(html, encoding="utf-8")
 
@@ -575,16 +620,19 @@ def build_speaking() -> None:
     talks = load_json("talks.json", [])
     testimonials = load_json("testimonials.json", [])
 
+    # Optional: the section only renders once [[speaking.topics.items]] has
+    # entries in copy.toml. Empty list (or no items) and nothing is output.
+    topic_items = c["topics"].get("items") or []
     topics = f"""
     <section class="section">
         <div class="container">
             <p class="kicker">{c["topics"]["kicker"]}</p>
             <h2>{c["topics"]["heading"]}</h2>
-            <div class="topic-grid">{render_topics(c["topics"]["items"])}
+            <div class="topic-grid">{render_topics(topic_items)}
             </div>
         </div>
     </section>
-    """
+    """ if topic_items else ""
 
     format_items = "".join(
         f"""
@@ -620,12 +668,24 @@ def build_speaking() -> None:
                 desc=talk.get("notes", ""),
             )
         )
+    talks_caption = c["talks"].get("image_caption", "")
+    talks_figcaption = (
+        f'\n                <figcaption class="img-credit">{talks_caption}</figcaption>'
+        if talks_caption
+        else ""
+    )
+    # Portrait floated to the right of the entry list: the entries wrap around it
+    # and return to full width once the photo ends (see .talks-media in the CSS).
+    talks_figure = f"""
+            <figure class="talks-media" data-reveal>
+                <img src="{SPEAKING_PHOTO}" alt="{c["talks"].get("image_alt", "")}" width="1280" height="1920" loading="lazy" />{talks_figcaption}
+            </figure>"""
     talks_section = f"""
     <section class="section">
-        <div class="container">
+        <div class="container talks-body">
             <p class="kicker">{c["talks"]["kicker"]}</p>
-            <h2>{c["talks"]["heading"]}</h2>
-            <ul class="entry-list">{''.join(talk_entries)}</ul>
+            <h2>{c["talks"]["heading"]}</h2>{talks_figure}
+            <ul class="entry-list entry-list--float">{''.join(talk_entries)}</ul>
         </div>
     </section>
     """ if talk_entries else ""
@@ -749,6 +809,9 @@ def build_teaching() -> None:
         canonical_path="teaching.html",
         current="teaching.html",
         main=content,
+        # Placeholder until data/teaching.json has entries: keep it out of search
+        # results, but let crawlers follow its links.
+        noindex=not entries,
     )
     (ROOT / "teaching.html").write_text(html, encoding="utf-8")
 
@@ -772,6 +835,41 @@ def build_academic_redirect() -> None:
     (ROOT / "academic.html").write_text(html, encoding="utf-8")
 
 
+def build_sitemap_and_robots() -> None:
+    """Sitemap of indexable pages, plus a robots.txt pointing at it.
+
+    teaching.html is left out while it is a noindex placeholder, and
+    academic.html is a redirect, so neither belongs in the sitemap.
+    """
+    teaching = load_json("teaching.json", {"show_in_nav": False, "entries": []})
+    pages = ["", "about.html", "research.html", "journalism.html",
+             "speaking.html", "recognition.html"]
+    if teaching.get("entries"):
+        pages.append("teaching.html")
+
+    today = f"{datetime.now():%Y-%m-%d}"
+    urls = "".join(
+        f"""
+    <url>
+        <loc>{SITE_URL}/{page}</loc>
+        <lastmod>{today}</lastmod>
+    </url>"""
+        for page in pages
+    )
+    sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}
+</urlset>
+"""
+    (ROOT / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+
+    robots = f"""User-agent: *
+Allow: /
+
+Sitemap: {SITE_URL}/sitemap.xml
+"""
+    (ROOT / "robots.txt").write_text(robots, encoding="utf-8")
+
+
 def main() -> None:
     build_home()
     build_about()
@@ -781,6 +879,7 @@ def main() -> None:
     build_recognition()
     build_teaching()
     build_academic_redirect()
+    build_sitemap_and_robots()
 
 
 if __name__ == "__main__":

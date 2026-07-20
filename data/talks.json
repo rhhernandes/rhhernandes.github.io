@@ -1,47 +1,110 @@
 [
-    {
-        "title": "",
-        "event": "",
-        "venue": "Alan Turing Institute",
-        "location": "London",
-        "date": "",
-        "url": "",
-        "notes": ""
-    },
-    {
-        "title": "",
-        "event": "",
-        "venue": "University of Oxford",
-        "location": "Oxford",
-        "date": "",
-        "url": "",
-        "notes": ""
-    },
-    {
-        "title": "",
-        "event": "",
-        "venue": "Web Summit Rio",
-        "location": "Rio de Janeiro",
-        "date": "",
-        "url": "",
-        "notes": ""
-    },
-    {
-        "title": "",
-        "event": "",
-        "venue": "Abraji — Brazilian Association of Investigative Journalism",
-        "location": "São Paulo",
-        "date": "",
-        "url": "",
-        "notes": ""
-    },
-    {
-        "title": "",
-        "event": "",
-        "venue": "Pulitzer Center",
-        "location": "",
-        "date": "",
-        "url": "",
-        "notes": ""
-    }
+  {
+    "title": "",
+    "event": "How AI is shaping journalism and journalism is shaping AI",
+    "venue": "Alan Turing Institute",
+    "location": "London",
+    "date": "Apr 2025",
+    "url": "https://www.turing.ac.uk/events/how-ai-shaping-journalism-and-journalism-shaping-ai",
+    "notes": "Panel on AI and journalism, alongside Umang Bhatt, Tomasz Hollanek, Jessica Cecil, and Parmy Olson."
+  },
+  {
+    "title": "AI and Emotional Companionship",
+    "event": "Oxford China Forum",
+    "venue": "Oxford China Forum",
+    "location": "University of Oxford",
+    "date": "Mar 2025",
+    "url": "",
+    "notes": "Chaired the roundtable on data intimacy and digital ethics, in a session where experts examined how AI is reshaping emotional experience and mental health care. Contributed as a journalist and AI ethics researcher, connecting the specialist debate to questions of privacy, ethics, and public understanding."
+  },
+  {
+    "title": "Platforms, News, and Disinformation",
+    "event": "Data Colonialism Dialogues",
+    "venue": "Data Colonialism Dialogues conference",
+    "location": "",
+    "date": "May 2024",
+    "url": "https://www.linkedin.com/feed/update/urn:li:ugcPost:7191447083919310849/",
+    "notes": "Talk at the conference held by the Leverhulme Centre for the Future of Intelligence (University of Cambridge) in collaboration with the Jindal School of Journalism and Communication at O.P. Jindal Global University."
+  },
+  {
+    "title": "Voz Delas: using AI to improve the gender diversity of sources",
+    "event": "",
+    "venue": "18th Abraji International Congress of Investigative Journalism",
+    "location": "São Paulo",
+    "date": "Jul 2023",
+    "url": "https://congresso.abraji.org.br/memoria-mesa/voz-delas-como-usamos-ia-para-ajudar-na-diversidade-de-genero-das-fontes",
+    "notes": "Panel on Voz Delas, Folha's Google News Initiative-backed AI system that classifies the gender of sources quoted in the paper and feeds a database of women experts, pushing coverage towards gender parity. With Camila Marques and Yuri Tavares; moderated by Vitória Régia da Silva (Gênero e Número). Original title: 'Voz Delas: como usamos IA para ajudar na diversidade de gênero das fontes'."
+  },
+  {
+    "title": "Generative AI and journalism: creating content on the Web",
+    "event": "",
+    "venue": "NIC.br Generative AI Seminar",
+    "location": "São Paulo",
+    "date": "May 2023",
+    "url": "https://iagenerativa.ceweb.br/",
+    "notes": "Panellist on the journalism session, on creating content for the Web, with Andrea Mendes (BuzzFeed), Helton Gomes (UOL Tilt), and Pollyana Ferrari (PUC-SP); moderated by Diogo Cortiz. Part of a seminar on generative AI and its social, ethical, and economic impact on the Web, run by Brazil's Network Information Center, which operates the .br domain and supports the country's internet development. Original title: 'IA generativa e jornalismo: criação de conteúdo na Web'."
+  },
+  {
+    "title": "Applying actionable technology in Brazil",
+    "event": "",
+    "venue": "Web Summit Rio",
+    "location": "Rio de Janeiro",
+    "date": "May 2023",
+    "url": "",
+    "notes": "Chaired the panel 'Applying actionable technology in Brazil' on the Corporate Innovation Summit stage, with Viviane Martins (Falconi) and Ana Buchaim (B3, Brazil's stock exchange), on digital efficiency and bringing AI into corporate management and decision-making. Web Summit Rio 2023 was the technology conference's first edition held outside Europe, drawing more than 20,000 people to Rio de Janeiro."
+  },
+  {
+    "title": "Present and Future of the rights to privacy and data protection",
+    "event": "",
+    "venue": "Data Privacy Global Conference",
+    "location": "São Paulo",
+    "date": "Nov 2022",
+    "url": "https://dpgconference.com.br/en/2022-edition/",
+    "notes": "Chaired the opening keynote, 'Present and Future of the rights to privacy and data protection', with UN Special Rapporteur on the right to privacy Ana Brian Nougrère and Enrique Bravo-Escobar of the National Endowment for Democracy. Organised by Data Privacy Brasil, the two-day São Paulo conference brought together more than 200 participants and around 50 speakers across nine panels."
+  },
+  {
+    "title": "Why privacy and data protection matter more than ever",
+    "event": "",
+    "venue": "ITS Rio — Instituto de Tecnologia e Sociedade",
+    "location": "Online",
+    "date": "Jul 2022",
+    "url": "https://itsrio.org/pt/cursos/lab-sociedade-digital",
+    "notes": "Guest lecture in Lab Sociedade Digital, an ITS Rio course delivered with Folha de S.Paulo and Unico for 80 selected journalists and content creators, covering data protection, information security, and digital identity. Original title: 'Proteção de Dados e Cibersegurança: por que privacidade e proteção de dados são cada vez mais relevantes?'."
+  },
+  {
+    "title": "Privacy and Data Security seminar",
+    "event": "",
+    "venue": "Folha de S.Paulo",
+    "location": "Livestreamed",
+    "date": "Apr 2022",
+    "url": "https://www.youtube.com/watch?v=NGgsZs-Z_YI",
+    "notes": "Chaired both panels of Folha's seminar on privacy and data security: one on digital acceleration and the new directions of cybersecurity, another on trust and data protection."
+  },
+  {
+    "title": "Dealing with online harassment in news organisations",
+    "event": "",
+    "venue": "16th Abraji International Congress of Investigative Journalism",
+    "location": "Online",
+    "date": "Aug 2021",
+    "url": "https://congressoabraji.wordpress.com/2021/08/25/assedio-online-contra-as-redacoes/",
+    "notes": "Panel on how newsrooms can respond to the online harassment of journalists, drawing on the Privacidade para Jornalistas project, alongside Viktorya Vilk (PEN America), Sean Sposito (Verizon Media), and Paula Guimarães (Portal Catarinas). Original title: 'Lidando com o assédio virtual nos veículos: uma conversa entre gestores'."
+  },
+  {
+    "title": "Digital security for local newsrooms",
+    "event": "",
+    "venue": "Abraji — Brazilian Association of Investigative Journalism",
+    "location": "Online",
+    "date": "Oct 2019",
+    "url": "https://www.abraji.org.br/abraji-lanca-curso-online-de-jornalismo-local",
+    "notes": "Taught the digital security module of Jornalismo Local Sustentável, Abraji's free eight-week online course for local newsrooms, supported by the Facebook Journalism Project and open to up to 3,000 journalists across Brazil."
+  },
+  {
+    "title": "Safety in the Field — Data Safety &amp; Cybersecurity",
+    "event": "",
+    "venue": "Rainforest Journalism Fund, Pulitzer Center",
+    "location": "Manaus",
+    "date": "Jul 2019",
+    "url": "",
+    "notes": "Talk and Q&amp;A on the cybersecurity side of this session, at the first Rainforest Journalism Fund conference — a gathering of around 80 journalists from across the Amazon basin in Manaus. The fund supports reporting on the world's rainforests and is an initiative of the Pulitzer Center."
+  }
 ]

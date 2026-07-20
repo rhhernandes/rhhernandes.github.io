@@ -31,8 +31,8 @@
 # =============================================================================
 
 [index.meta]
-title = "Raphael Hernandes · AI Ethics Researcher & Journalist"
-description = "AI ethics researcher at the University of Cambridge, after a decade as an award-winning journalist at Folha de S.Paulo and the Guardian. Research and reporting on how AI reshapes journalism and information environments."
+title = "Raphael Hernandes · AI Ethics Researcher &amp; Journalist"
+description = "AI ethics researcher at the University of Cambridge, after more than a decade as an award-winning journalist at Folha de S.Paulo and the Guardian. Research and reporting on how AI reshapes journalism and information environments."
 
 # Structured data (JSON-LD) — not visible on the page; feeds Google search
 # results and knowledge panels.
@@ -43,17 +43,30 @@ affiliation = "University of Cambridge"
 affiliation_department = "Cambridge Digital Humanities"
 alumni_of = "University of Cambridge"
 awards = [
-    "European Press Prize, Innovation Award (2026)",
+    "European Press Prize Laureate, Innovation category (2026)",
     "Huw Price Prize, University of Cambridge",
     "Harding Distinguished Postgraduate Scholarship",
+]
+# One-sentence summary of who you are, for search engines (third person).
+description = "Raphael Hernandes is a PhD candidate at Cambridge Digital Humanities, University of Cambridge, researching how AI reshapes journalism and information environments. He previously spent more than a decade as a journalist at Folha de S.Paulo and the Guardian."
+# Subject expertise. Where a topic has a clear Wikipedia entry, the optional
+# wikipedia key links it to that entity, which is a stronger signal than a bare
+# string; topics without one are emitted as plain text.
+knows_about = [
+    { name = "AI ethics", wikipedia = "https://en.wikipedia.org/wiki/Ethics_of_artificial_intelligence" },
+    { name = "AI and journalism" },
+    { name = "Disinformation", wikipedia = "https://en.wikipedia.org/wiki/Disinformation" },
+    { name = "Algorithm auditing" },
+    { name = "Data journalism", wikipedia = "https://en.wikipedia.org/wiki/Data_journalism" },
+    { name = "Platform accountability" },
 ]
 
 # Hero — the big opening block with the portrait.
 [index.hero]
 kicker = "AI ethics researcher · Award-winning journalist"
 heading = "Raphael Hernandes"
-lede = '''Journalism and research on the systems that decide what people get to know.'''
-summary = '''PhD candidate at Cambridge Digital Humanities, researching how AI reshapes journalism, information environments, and mediation. The questions come from over a decade of reporting at places like Folha de S.Paulo and the Guardian.'''
+lede = '''Journalism and research on the systems that shape what people get to know.'''
+summary = '''PhD candidate at Cambridge Digital Humanities, researching how AI impacts journalism, information environments, and mediation. The questions come from over a decade of reporting at places like Folha de S.Paulo and the Guardian.'''
 button = "Speaking &amp; advisory enquiries"
 text_link = "More about me"
 
@@ -63,7 +76,7 @@ aria_label = "Headline credentials"  # spoken by screen readers only
 
 [[index.credentials.items]]
 label = "European Press Prize"
-detail = "Laureate, 2026 Innovation Award, for an investigation into far-right radicalisation on Facebook"
+detail = "Laureate — 2026 shortlist, Innovation category, for an investigation into far-right radicalisation on Facebook"
 
 [[index.credentials.items]]
 label = "Huw Price Prize"
@@ -71,7 +84,7 @@ detail = "Best overall performance, Cambridge MPhil in Ethics of AI, Data, and A
 
 [[index.credentials.items]]
 label = "Harding Scholar"
-detail = "Harding Distinguished Postgraduate Scholarship, University of Cambridge"
+detail = "Work funded by a Harding Distinguished Postgraduate Scholarship, University of Cambridge"
 
 # Explore — the index of links to the other pages.
 [index.explore]
@@ -80,7 +93,7 @@ heading_sr = "Explore"  # screen-reader-only section heading
 [[index.explore.rows]]
 title = "About"
 href = "about.html"
-desc = "The longer version: how the reporting led to the research."
+desc = "The longer version: how reporting and research connect."
  
 [[index.explore.rows]]
 title = "Research"
@@ -95,7 +108,7 @@ desc = "Selected reporting and investigations."
 [[index.explore.rows]]
 title = "Speaking &amp; public engagement"
 href = "speaking.html"
-desc = "Keynotes, panels, workshops, training, and advisory work."
+desc = "Keynotes, panels, workshops, and training."
 
 [[index.explore.rows]]
 title = "Recognition &amp; press"
@@ -109,7 +122,7 @@ desc = "Awards, honours, and media coverage."
 
 [about.meta]
 title = "About · Raphael Hernandes"
-description = "Raphael Hernandes spent a decade reporting on —and building with— AI and data at Folha de S.Paulo and the Guardian. He is now a PhD candidate at Cambridge, researching AI, journalism, and information environments."
+description = "Raphael Hernandes spent more than a decade reporting on — and building with — AI and data at Folha de S.Paulo and the Guardian. He is now a PhD candidate at Cambridge, researching AI, journalism, and information environments."
 
 [about.header]
 kicker = "About"
@@ -117,14 +130,16 @@ title = "A journalist at Cambridge"
 
 [about.body]
 paragraphs = [
-    '''For a decade I worked as a journalist — first at <a href="https://www1.folha.uol.com.br/autores/raphael-hernandes.shtml" target="_blank" rel="noopener">Folha de S.Paulo</a>, Brazil's largest newspaper, where I became Editor-at-Large (repórter especial), and then on the data team at <a href="https://www.theguardian.com/profile/raphael-hernandes" target="_blank" rel="noopener">the Guardian</a>. I used data to break stories, and I built AI and data tools inside the newsroom: systems for investigation, analysis, and automation that changed how the reporting got done.''',
-    '''The subject I kept returning to was the machinery reshaping how societies know things. I reported on algorithmic harm, disinformation, platform power, and cybersecurity. A Guardian investigation tracing <a href="https://www.theguardian.com/world/ng-interactive/2025/sep/28/inside-the-everyday-facebook-networks-where-far-right-ideas-grow" target="_blank" rel="noopener">far-right radicalisation across a network of UK Facebook groups</a> won the 2026 European Press Prize (Innovation Award).''',
+    '''For over a decade I worked as a journalist. Before moving to the UK, I was an editor-at-large ("repórter especial") at <a href="https://www1.folha.uol.com.br/autores/raphael-hernandes.shtml" target="_blank" rel="noopener">Folha de S.Paulo</a>, Brazil's largest newspaper. I was later part of the data team at <a href="https://www.theguardian.com/profile/raphael-hernandes" target="_blank" rel="noopener">the Guardian</a>. I used data to break stories, and I built and implemented AI tools inside the newsroom: systems for investigation, analysis, and automation that changed how the reporting got done.''',
+    '''The subject I kept returning to was the machinery reshaping how societies know things. I reported on algorithmic harm, disinformation, platform power, and cybersecurity. A Guardian investigation tracing <a href="https://www.theguardian.com/world/ng-interactive/2025/sep/28/inside-the-everyday-facebook-networks-where-far-right-ideas-grow" target="_blank" rel="noopener">far-right radicalisation across a network of UK Facebook groups</a> was named a 2026 European Press Prize Laureate, shortlisted in the Innovation category.''',
     '''I went to Cambridge to study those systems. I took the MPhil in Ethics of AI, Data, and Algorithms, graduating with Distinction and the <a href="https://www.lcfi.ac.uk/education/mphil/huw-price-prize" target="_blank" rel="noopener">Huw Price Prize</a> for the year's best overall performance. I am now a PhD candidate at <a href="https://www.cdh.cam.ac.uk/about/people/raphael-hernandes/" target="_blank" rel="noopener">Cambridge Digital Humanities</a> (Selwyn College), supported by a <a href="https://www.hardingscholars.fund.cam.ac.uk/raphael-hernandes-2025-cohort" target="_blank" rel="noopener">Harding Distinguished Postgraduate Scholarship</a>, researching how AI reshapes journalism, information environments, and mediation.''',
-    '''The research maps directly onto the practice. As a research assistant at the Leverhulme Centre for the Future of Intelligence, I analysed media coverage of AI and the use of generative systems in political communication, and co-created a <a href="https://www.desirableai.com/journalism-toolkit" target="_blank" rel="noopener">toolkit for responsible AI adoption in newsrooms</a> — the problem I had previously faced from the other side, as the person doing the adopting.''',
-    '''Beyond the newsroom and the university, I founded Privacidade para Jornalistas, a cybersecurity resource and training project for journalists ended in 2024. I also speak regularly on AI, journalism, and information integrity. Venues include the Alan Turing Institute, the University of Oxford, Web Summit Rio, Abraji, and Pulitzer Center events.''',
+    '''The research maps directly onto the practice. I work on the questions I used to run into: <a href="https://www.mctd.ac.uk/report-launch-data-not-found/" target="_blank" rel="noopener">whether platforms let anyone independently check what circulates on them</a>, whether news organisations have any say in how AI systems use their content, how much AI-generated material is really out there, and <a href="https://www.desirableai.com/journalism-toolkit" target="_blank" rel="noopener">what responsible adoption actually looks like inside a newsroom</a>.''',
+    '''Beyond the newsroom and the university, I founded Privacidade para Jornalistas, a cybersecurity resource and training project for journalists which ran until 2024. I also <a href="speaking.html">speak regularly</a> on AI, journalism, and information integrity. Venues include the Alan Turing Institute, the University of Oxford, Web Summit Rio, Abraji, and Pulitzer Center events.''',
 ]
-pull_quote = "The reporting and the research are the same question, asked twice: what is AI doing to the way societies know things?"
-photo_credit = "Lloyd Mann/University of Cambridge"
+# pull_quote — optional. Add a sentence here to show a pull quote at the end of
+# the About body; leave it out (or empty) and nothing is rendered.
+pull_quote = ""
+photo_credit = "Raphael Hernandes at Selwyn College. <i>Photo: Lloyd Mann/University of Cambridge</i>"
 
 
 # =============================================================================
@@ -139,9 +154,9 @@ description = "PhD research at Cambridge Digital Humanities on AI, journalism, i
 kicker = "Research"
 title = "How AI reshapes what societies know"
 intro = [
-    '''I am a PhD candidate at <a href="https://www.cdh.cam.ac.uk/about/people/raphael-hernandes/" target="_blank" rel="noopener">Cambridge Digital Humanities</a>, University of Cambridge (Selwyn College), supported by a <a href="https://www.hardingscholars.fund.cam.ac.uk/raphael-hernandes-2025-cohort" target="_blank" rel="noopener">Harding Distinguished Postgraduate Scholarship</a>. My research examines how artificial intelligence reshapes journalism and information environments —and what that means for mediation: the people, institutions, and systems that stand between events and public understanding.''',
-    '''Before the PhD, I completed the MPhil in Ethics of AI, Data, and Algorithms at Cambridge with Distinction, receiving the <a href="https://www.lcfi.ac.uk/education/mphil/huw-price-prize" target="_blank" rel="noopener">Huw Price Prize</a> for best overall performance. As a research assistant at the Leverhulme Centre for the Future of Intelligence, I analysed media coverage of AI and generative systems in political communication, and co-created a <a href="https://www.desirableai.com/journalism-toolkit" target="_blank" rel="noopener">toolkit for responsible AI adoption in newsrooms</a>.''',
-    '''The work combines computational approaches —algorithm audits, large-scale text analysis, computational grounded theory— with interviews and ethical analysis, informed by ten years of newsroom practice.''',
+    '''I am a PhD candidate at <a href="https://www.cdh.cam.ac.uk/about/people/raphael-hernandes/" target="_blank" rel="noopener">Cambridge Digital Humanities</a>, University of Cambridge (Selwyn College), supported by a <a href="https://www.hardingscholars.fund.cam.ac.uk/raphael-hernandes-2025-cohort" target="_blank" rel="noopener">Harding Distinguished Postgraduate Scholarship</a>. My research examines how artificial intelligence reshapes journalism and information environments, and what that means for mediation: the people, institutions, and systems that stand between events and public understanding.''',
+    '''My work keeps technology platforms under scrutiny. That means both the information circulating on them and the ability of others to examine it.''',
+    '''I am a Student Fellow at the <a href="https://www.lcfi.ac.uk/people/raphael-hernandes-2" target="_blank" rel="noopener">Leverhulme Centre for the Future of Intelligence</a>, and completed the MPhil in Ethics of AI, Data, and Algorithms at Cambridge with Distinction and the <a href="https://www.lcfi.ac.uk/education/mphil/huw-price-prize" target="_blank" rel="noopener">Huw Price Prize</a>. I combine computational approaches — algorithm audits, large-scale text analysis, computational grounded theory — with interviews and ethical analysis, informed by more than a decade in newsrooms.''',
 ]
 
 [research.themes]
@@ -154,7 +169,7 @@ desc = "How newsrooms adopt AI systems, what those systems do to editorial judge
 
 [[research.themes.topics]]
 title = "Information integrity"
-desc = "Disinformation, radicalisation, and epistemic security: how platforms and generative systems change what publics can reliably know."
+desc = "How platforms and generative systems change what publics can reliably know."
 
 [[research.themes.topics]]
 title = "Mediation"
@@ -179,7 +194,7 @@ description = "Selected reporting by Raphael Hernandes: award-winning investigat
 kicker = "Journalism"
 title = "Reporting on the systems that shape what people know"
 intro = [
-    '''A decade of reporting, from São Paulo to London. At Folha de S.Paulo I was Editor-at-Large (repórter especial), leading data- and AI-driven projects; at the Guardian I work on data-led investigations. The through-line is technology, power, and the systems that shape what people know — including the investigation into far-right radicalisation on Facebook that won the 2026 European Press Prize for Innovation.''',
+    '''More than a decade of reporting, at local, national, and global levels, in different countries. Before moving to the UK, at Folha de S.Paulo I was Editor-at-Large, leading data- and AI-driven projects. Later, at the Guardian, I worked on data-led investigations. The through-line is technology, power, and the systems that shape what people know.''',
 ]
 
 # Article cards themselves come from articles.csv (Category = Journalism).
@@ -196,32 +211,36 @@ heading = "More selected work"
 # =============================================================================
 
 [speaking.meta]
-title = "Speaking & Public Engagement · Raphael Hernandes"
+title = "Speaking &amp; Public Engagement · Raphael Hernandes"
 description = "Keynotes, panels, workshops, and advisory on AI ethics, AI in journalism, disinformation and information integrity, responsible AI adoption, and cybersecurity for journalists."
 
 [speaking.header]
 kicker = "Speaking &amp; public engagement"
-title = "Experience both in newsrooms and in rigorous research"
+title = "Experience in newsrooms and rigorous research"
 intro = [
-    '''I  speak, train, and advise on AI, journalism, and information integrity. I have reported on these systems, built with them inside newsrooms, and now research them at Cambridge.''',
+    '''I speak, train, and advise on AI, journalism, and what that means for how we engage with information. I have reported on these systems, built with them inside newsrooms, and now research them at Cambridge.''',
     '''I work with newsrooms, universities, conferences, and organisations navigating AI adoption, in English or Portuguese.''',
 ]
 
 [speaking.topics]
 kicker = "Topics"
 heading = "What I speak on"
+# The Topics section only renders once there is at least one item below.
+# Leave items = [] and the whole section is skipped. To bring it back, delete
+# the empty list and uncomment (or rewrite) the entries that follow.
+items = []
 
-[[speaking.topics.items]]
-title = "AI ethics"
-desc = "What responsible AI requires in practice, beyond the principles documents.."
-
-[[speaking.topics.items]]
-title = "AI in journalism and the newsroom"
-desc = "Adoption, tooling, and editorial judgement: lessons from building newsroom AI systems and from studying them."
-
-[[speaking.topics.items]]
-title = "Responsible AI adoption"
-desc = "For organisations beyond the newsroom: governance, risk, and honest expectations about what these systems can and cannot do."
+# [[speaking.topics.items]]
+# title = "AI ethics"
+# desc = "What responsible AI requires in practice, beyond the principles documents."
+#
+# [[speaking.topics.items]]
+# title = "AI in journalism and the newsroom"
+# desc = "Adoption, tooling, and editorial judgement: lessons from building newsroom AI systems and from studying them."
+#
+# [[speaking.topics.items]]
+# title = "Responsible AI adoption"
+# desc = "For organisations beyond the newsroom: governance, risk, and honest expectations about what these systems can and cannot do."
 
 [speaking.formats]
 kicker = "Formats"
@@ -247,6 +266,8 @@ detail = "Ongoing counsel for organisations working through AI adoption and info
 [speaking.talks]
 kicker = "Past engagements"
 heading = "Selected venues &amp; programmes"
+image_alt = "Raphael Hernandes speaking at an Alan Turing Institute event"
+image_caption = "Raphael Hernandes speaks at an Alan Turing Institute event. <i>Photo: Daniel Stone</i>"
 
 # Testimonial entries come from data/testimonials.json; the section only
 # renders once that file has at least one entry.
@@ -260,14 +281,14 @@ heading = "What organisers say"
 # =============================================================================
 
 [recognition.meta]
-title = "Recognition & Press · Raphael Hernandes"
-description = "Awards and honours including the 2026 European Press Prize (Innovation), the Huw Price Prize at Cambridge, and a Harding Distinguished Postgraduate Scholarship."
+title = "Recognition &amp; Press · Raphael Hernandes"
+description = "Awards and honours including a 2026 European Press Prize Laureate distinction (Innovation category), the Huw Price Prize at Cambridge, and a Harding Distinguished Postgraduate Scholarship."
 
 [recognition.header]
 kicker = "Recognition &amp; press"
 title = "Awards, honours &amp; coverage"
 intro = [
-    '''Coverage in the media, and awards and honours from journalism and from Cambridge.''',
+    '''Coverage in the media, and awards and honours as a journalist and as a researcher.''',
 ]
 
 # Press entries come from data/press.json.
@@ -333,7 +354,7 @@ teaching_nav = { label = "Teaching", href = "teaching.html" }
 [shared.enquiries]
 kicker = "Enquiries"
 heading = "Speaking &amp; advisory enquiries"
-body = "For keynotes, panels, workshops, training, or advisory work —in English or Portuguese— email me with dates, audience, and format."
+body = "For keynotes, panels, workshops, training, or advisory work — in English or Portuguese — email me with dates, audience, and format."
 button = "Email {email}"  # {email} is filled with the contact address at build time
 alt_html = '''Or reach me on <a href="https://www.linkedin.com/in/raphaelhernandes/" target="_blank" rel="noopener">LinkedIn</a>.'''
 mail_subject = "Speaking / advisory enquiry"  # pre-filled subject line of the email button

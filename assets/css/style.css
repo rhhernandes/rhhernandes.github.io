@@ -243,15 +243,18 @@ h3 {
     color: var(--bg);
 }
 
+/* Light button (used on the dark CTA band). Mirrors the footer social
+   buttons: dark text on white, inverting fully on hover/focus. */
 .button--light {
-    background: var(--bg);
-    color: var(--ink);
+    background: #fff;
+    color: var(--accent) !important;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .button--light:hover,
 .button--light:focus {
-    background: #fff;
-    color: var(--accent-deep);
+    background: var(--accent) !important;
+    color: #fff !important;
 }
 
 /* ------------------------------------------------------------------ */
@@ -296,7 +299,7 @@ h3 {
 }
 
 .hero-media img {
-    width: min(60vw, 260px);
+    width: min(60vw, 360px);
     border-radius: 50%;
     border: 1px solid var(--divider);
 }
@@ -312,7 +315,7 @@ h3 {
     }
 
     .hero-media img {
-        width: min(100%, 300px);
+        width: min(100%, 360px);
     }
 }
 
@@ -435,6 +438,72 @@ h3 {
     margin: 0 0 1rem;
 }
 
+/* Past-engagements photo (speaking page): floated to the right of the entry
+   list so the entries wrap around it and return to full width once the photo
+   ends. Mirrors the About portrait treatment. Full-frame, never cropped;
+   stacked and centred below the heading on small screens. */
+.talks-body {
+    display: flow-root; /* contain the float within the section */
+}
+
+.talks-media {
+    margin: 0.5rem 0 2rem;
+}
+
+.talks-media img {
+    display: block;
+    width: min(70vw, 300px);
+    height: auto;
+    margin: 0 auto;
+    border-radius: 2px;
+    border: 1px solid var(--divider);
+}
+
+@media (min-width: 760px) {
+    .talks-media {
+        float: right;
+        width: 300px;
+        margin: 0.35rem 0 1.5rem 2rem;
+        /* Sit above the entries so their full-width divider lines don't show
+           over the photo (the reveal animation gives entries a stacking
+           context via will-change/transform). */
+        position: relative;
+        z-index: 1;
+    }
+
+    .talks-media img {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Flow the entries as normal blocks so their text wraps around the floated
+       photo, instead of forming an independent grid column beside it. */
+    .entry-list.entry-list--float {
+        display: block;
+    }
+
+    .entry-list--float .entry {
+        /* Establish a block formatting context so each entry shrinks to sit
+           beside the photo. Its divider then ends at the text column rather than
+           running all the way to the image, and returns to full width below. */
+        display: flow-root;
+        margin: 0 0 1.9rem;
+    }
+
+    .entry-list--float .entry:last-child {
+        margin-bottom: 0;
+    }
+
+    .entry-list--float .entry-meta {
+        margin: 0 0 0.45rem;
+    }
+
+    .entry-list--float .entry-title {
+        display: block;
+        margin: 0 0 0.45rem;
+    }
+}
+
 .section {
     padding: 3rem 0;
 }
@@ -456,17 +525,17 @@ main p a {
 /* About                                                                */
 /* ------------------------------------------------------------------ */
 
-.about-grid {
-    display: grid;
-    gap: 2.5rem;
-}
-
+/* Portrait: vertical 9:16 crop of the square source image. Sits between
+   the first and second paragraphs; stacked and centred on small screens,
+   floated right with text wrapping around it from 760px up. */
 .about-media {
-    margin: 0;
+    margin: 0.5rem 0 2rem;
 }
 
 .about-media img {
-    width: min(60vw, 260px);
+    width: min(75vw, 360px);
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
     border-radius: 2px;
     border: 1px solid var(--divider);
     margin: 0 auto;
@@ -478,11 +547,18 @@ main p a {
     letter-spacing: 0.05em;
     color: var(--text-muted);
     text-align: center;
-    margin: 0.5rem 0 0;
+    margin: 0.25rem 0 0;
 }
 
 .about-body p {
     margin: 0 0 1.35rem;
+}
+
+/* Contain the floated portrait so it never spills past the section. */
+.about-body::after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .pull-quote {
@@ -496,7 +572,14 @@ main p a {
 }
 
 @media (min-width: 760px) {
+    .about-media {
+        float: right;
+        width: 360px;
+        margin: 0.35rem 0 1.5rem 2.5rem;
+    }
+
     .about-media img {
+        width: 100%;
         margin: 0;
     }
 
@@ -624,7 +707,7 @@ a.entry-title:focus {
     color: #cfcbc3;
 }
 
-.cta-band a {
+.cta-band a:not(.button) {
     color: #fff;
 }
 

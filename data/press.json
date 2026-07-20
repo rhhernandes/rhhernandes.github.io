@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "outlet": "University of Cambridge",
+        "title": "The researcher analysing far-right rhetoric on Facebook",
+        "date": "Apr 2026",
+        "url": "https://www.cam.ac.uk/this-cambridge-life/far-right-facebook",
+        "note": "This Cambridge Life profile on the move from a decade in journalism to research, and the award-nominated Guardian investigation into far-right Facebook networks."
+    },
+    {
+        "outlet": "Politiken (Denmark)",
+        "title": "»Please, men, protect us«: A new generation of right-wing women is using social media to rebel",
+        "date": "Oct 2025",
+        "url": "https://politiken.dk/internationalt/art10563546/%C2%BBPlease-m%C3%A6nd-beskyt-os%C2%AB-En-ny-generation-af-kvinder-p%C3%A5-h%C3%B8jrefl%C3%B8jen-bruger-sociale-medier-til-at-g%C3%B8re-opr%C3%B8r",
+        "note": "Interviewed for this feature in Politiken (Denmark) on right-wing women and social media. Original Danish headline: »Please, mænd, beskyt os«: En ny generation af kvinder på højrefløjen bruger sociale medier til at gøre oprør."
+    }
+]
