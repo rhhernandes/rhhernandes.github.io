@@ -100,6 +100,39 @@ The testimonials section on the Speaking page appears automatically once this fi
 
 The black "Speaking & advisory enquiries" band that closes every page is edited in `copy.toml` under `[shared.enquiries]` — it updates site-wide on rebuild. `{email}` in the button text is replaced at build time with the contact address.
 
+### Malton band (home page only)
+
+The faint line drawing above the enquiries band on the home page is
+`static/img/kings-college-line.svg` — King's College, the Chapel and Clare Hall,
+traced from Thomas Malton's 1799 aquatint (Yale Center for British Art, public
+domain). It is emitted by `malton_band()` in `build_site.py` and passed to
+`render_layout(pre_enquiries=…)` from `build_home()` only, so it appears on no
+other page. It is decorative: `aria-hidden`, empty `alt`, lazily loaded.
+
+Everything visual is tuned in `style.css` under **Malton band**:
+
+| What | Knob |
+| --- | --- |
+| Zoom — how much of the drawing is in frame | `--malton-size` |
+| Where the enquiries box sits | `--malton-band` (lower = it climbs) |
+| Hiding the empty lawn behind the enquiries box | `--malton-sink` (the lawn is the bottom 29% of the drawing, so `size × 0.29` buries it exactly) |
+| Which slice shows when cropped left/right | `--malton-x` (0% = trees and Clare Hall, 100% = Gibbs building) |
+| Which slice shows when cropped top/bottom | `--malton-y` (0% = rooflines, 100% = lawn) |
+| Top / bottom dissolve | gradient stops in `.malton-foot-art::before` |
+| Left / right dissolve | `.malton-foot-art::after` |
+| Line colour | the `fill` attribute in the SVG, currently `#e3dfd7` (`--divider`) |
+
+How far the drawing climbs behind the index rows is the leftover,
+`size − band − sink`, so there's nothing to set for it.
+
+Two things that catch people out:
+
+- **Only one of `x`/`y` does anything at a given width.** The artwork is
+  1200×446 (ratio 2.69), so it crops left/right while the viewport is narrower
+  than `size × 2.69`, and top/bottom once it is wider.
+- **On phones a *bigger* `--malton-size` gives a tighter crop**, not a shrunken
+  whole view, because `object-fit: cover` is cropping horizontally there.
+
 ### Contact email & socials
 
 `CONTACT_EMAIL` and `SOCIAL_LINKS` are constants at the top of `build_site.py`.

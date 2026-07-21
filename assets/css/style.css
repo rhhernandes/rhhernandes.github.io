@@ -684,6 +684,144 @@ a.entry-title:focus {
 }
 
 /* ------------------------------------------------------------------ */
+/* Malton band (home only)                                              */
+/* ------------------------------------------------------------------ */
+
+/* A line drawing traced from Thomas Malton's 1799 view of King's College,
+   sitting above the enquiries band and rising behind the last rows of the
+   home index.
+
+   The wrapper reserves --malton-band of space in normal flow; the artwork
+   inside is taller than that and overflows upward at z-index -1, so it
+   passes behind the index rows. Those rows are transformed by the scroll
+   reveal, which gives each one its own stacking context, so their text keeps
+   painting on top without any z-index of its own. The enquiries band is a
+   plain in-flow block, so its background paints *over* the artwork — which
+   is what --malton-sink exploits. */
+
+/* ── The tuning knobs ───────────────────────────────────────────────
+   --malton-size  total height of the artwork. This alone sets the zoom.
+                  Leave it if you are happy with how much is in frame.
+   --malton-band  space reserved between the index list and the enquiries
+                  box. Lower it and the enquiries box climbs. Does not
+                  affect the zoom.
+   --malton-sink  how far the artwork slides down behind the enquiries
+                  box, which paints over it. This is how you lose the
+                  empty lawn: the lawn is the bottom 29% of the drawing,
+                  so a sink of size x 0.29 leaves the buildings standing
+                  directly on the enquiries box.
+   --malton-x     which slice you see when the drawing is cropped
+                  left/right. 0% = trees and Clare Hall, 100% = the Gibbs
+                  building. Does nothing above 1614px, where nothing is
+                  cropped left or right.
+
+   How far it climbs behind the index rows is the leftover:
+   size - band - sink. Nothing to set.
+
+   The drawing is 1200x446 (ratio 2.69) and the buildings end 71% of the
+   way down it, so:
+
+       sink = size x 0.294     puts the buildings on the enquiries box
+       crossover = size x 2.69 is where cover stops cropping left/right
+
+   Above the crossover, cover starts scaling the drawing to the viewport
+   width instead, so a fixed sink no longer lines up with the lawn. That
+   is why the widest breakpoint below switches size and sink to vw: at
+   37vw / 10.75vw the arithmetic holds at any width, and 37vw happens to
+   equal 600px at 1614px, so the two rules meet without a visible step. */
+
+.malton-foot {
+    --malton-size: 600px;
+    --malton-band: 170px;
+    --malton-sink: 176px;   /* 600 x 0.294 */
+    --malton-x: 50%;
+    position: relative;
+    height: var(--malton-band);
+}
+
+/* Close the CTA's own top margin so the drawing meets the enquiries box
+   exactly, and --malton-sink measures from that edge rather than from 2rem
+   above it. */
+.malton-foot + .cta-band {
+    margin-top: 0;
+}
+
+.malton-foot-art {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(-1 * var(--malton-sink));
+    height: var(--malton-size);
+    z-index: -1;
+    overflow: hidden;
+}
+
+.malton-foot-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--malton-x) 0;
+}
+
+/* The edges dissolve via paper-coloured gradients rather than a mask: the
+   page background is a flat colour, so the result is identical, and it
+   avoids mask-composite, which browsers still disagree about. Both overlays
+   need z-index — as plain pseudo-elements they would paint under the image. */
+.malton-foot-art::before,
+.malton-foot-art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.malton-foot-art::before {
+    background: linear-gradient(to bottom,
+        var(--bg) 0,
+        rgba(250, 249, 246, 0) 34%,
+        rgba(250, 249, 246, 0) 93%,
+        var(--bg) 100%);
+}
+
+.malton-foot-art::after {
+    background: linear-gradient(to right,
+        var(--bg) 0,
+        rgba(250, 249, 246, 0) 2%,
+        rgba(250, 249, 246, 0) 98%,
+        var(--bg) 100%);
+}
+
+/* Wide screens. Past 1614px a fixed size stops working: cover begins scaling
+   the drawing to the viewport width, so it grows with the window and a fixed
+   sink drifts off the lawn — the lawn creeps back and then the buildings get
+   clipped. Sizing in vw instead keeps the drawing at its natural proportions,
+   full width, with the buildings resting on the enquiries box at any width.
+       37vw    = the whole drawing, near enough (446/1200 = 37.17vw)
+       10.75vw = its bottom 29%, the lawn
+       26.25vw = what is left visible: the buildings */
+@media (min-width: 1615px) {
+    .malton-foot {
+        --malton-size: 37vw;
+        --malton-sink: 10.75vw;
+    }
+}
+
+/* Phones. object-fit: cover crops horizontally rather than vertically here,
+   so a bigger --malton-size means a tighter, more legible crop, not a
+   shrunken whole view. Only about a fifth of the drawing's width is in
+   frame, so --malton-x decides whether that fifth is the chapel, the Gibbs
+   building, or the gap between. */
+@media (max-width: 640px) {
+    .malton-foot {
+        --malton-size: 670px;   /* bigger size = tighter crop here, not smaller */
+        --malton-band: 200px;
+        --malton-sink: 197px;   /* 670 x 0.294 */
+        --malton-x: 55%;
+    }
+}
+
+/* ------------------------------------------------------------------ */
 /* CTA band                                                             */
 /* ------------------------------------------------------------------ */
 

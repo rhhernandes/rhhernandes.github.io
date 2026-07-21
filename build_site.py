@@ -192,6 +192,24 @@ def enquiries_band() -> str:
 """
 
 
+def malton_band() -> str:
+    """Decorative line drawing that sits above the enquiries band on the home page.
+
+    Traced from Thomas Malton's 1799 aquatint of King's College, the Chapel and
+    Clare Hall (Yale Center for British Art, public domain). Purely decorative,
+    so it carries an empty alt and is hidden from assistive technology; the
+    styling, including how far it rises behind the index list, lives in
+    style.css under "Malton band".
+    """
+    return """<div class="malton-foot" aria-hidden="true">
+            <div class="malton-foot-art">
+                <img src="static/img/kings-college-line.svg" alt="" width="1200" height="446"
+                     loading="lazy" decoding="async" />
+            </div>
+        </div>
+        """
+
+
 def render_social_links(extra_class: str = "") -> str:
     classes = " ".join([cls for cls in ("social-links", extra_class) if cls])
     items = []
@@ -256,6 +274,7 @@ def render_layout(
     current: str,
     main: str,
     body_class: str = "",
+    pre_enquiries: str = "",
     extra_head: str = "",
     noindex: bool = False,
     schema: bool = True,
@@ -298,7 +317,7 @@ def render_layout(
     </header>
     <main id="main">
         {main}
-        {enquiries_band()}
+        {pre_enquiries}{enquiries_band()}
     </main>
     <footer class="site-footer">
         <div class="container">
@@ -478,6 +497,7 @@ def build_home() -> None:
         current="index.html",
         main=hero + credentials + section_index,
         body_class="page-home",
+        pre_enquiries=malton_band(),
     )
     (ROOT / "index.html").write_text(html, encoding="utf-8")
 

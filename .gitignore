@@ -3,3 +3,8 @@
 **/.DS_Store
 __pycache__/
 *.pyc
+
+# Source plates for the traced King's College drawing. Kept locally for
+# provenance and re-tracing; the site only ships static/img/kings-college-line.svg.
+static/img/Thomas_Malton_-*.jpg
+static/img/cropped-Thomas_Malton_-*.jpeg
